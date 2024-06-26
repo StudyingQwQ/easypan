@@ -13,6 +13,7 @@ import com.easypan.exception.BusinessException;
 import com.easypan.mappers.EmailCodeMapper;
 import com.easypan.mappers.UserInfoMapper;
 import com.easypan.service.EmailCodeService;
+import com.easypan.utils.RedisUtils;
 import com.easypan.utils.StringTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +48,8 @@ public class EmailCodeServiceImpl implements EmailCodeService {
     @Resource
     private RedisComponent redisComponent;
 
-
+    @Resource
+    private RedisUtils redisUtils;
     /**
      * 真正发送邮件验证码
      * @param toEmail 发送到德邮箱
@@ -99,31 +101,42 @@ public class EmailCodeServiceImpl implements EmailCodeService {
         sendEmailCode(toEmail, code);
 
         // 数据库中的其他验证码置于不可用
-        emailCodeMapper.disableEmailCode(toEmail);
+        //emailCodeMapper.disableEmailCode(toEmail);
+        redisUtils.delete(toEmail);
+        logger.info("删除");
 
         // 封装EmailCode对象
+        /*
         EmailCode emailCode = new EmailCode();
         emailCode.setCode(code);
         emailCode.setEmail(toEmail);
         emailCode.setStatus(Constants.REGISTER_ZERO);
         emailCode.setCreateTime(new Date());
-
+        */
         // 插入数据库
-        emailCodeMapper.insert(emailCode);
+        //emailCodeMapper.insert(emailCode);
+        redisUtils.setex(toEmail,code,300);
+        logger.info((String) redisUtils.get(toEmail));
     }
 
     @Override
     public void checkCode(String email, String code) {
-        EmailCode emailCode = emailCodeMapper.selectByEmailAndCode(email, code);
+        //EmailCode emailCode = emailCodeMapper.selectByEmailAndCode(email, code);
+        String emailCode = (String) redisUtils.get(email);
+        logger.info((String) redisUtils.get(email));
         // 如果没查到数据
-        if (emailCode == null) {
+        if(emailCode == null){
+            throw new BusinessException("邮箱验证已失效");
+        }
+        if (!emailCode.equals(code)) {
             throw new BusinessException("邮箱验证码不正确");
         }
         // 如果已经失效或超时
+        /*
         if (emailCode.getStatus() == 1 || System.currentTimeMillis() - emailCode.getCreateTime()
                 .getTime() > Constants.LENGTH_15 * 1000 * 60) {
             throw new BusinessException("邮箱验证已失效");
-        }
+        }*/
 
         emailCodeMapper.disableEmailCode(email);
     }

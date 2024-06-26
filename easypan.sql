@@ -86,8 +86,6 @@ CREATE TABLE `user_info`  (
   `user_id` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '用户ID',
   `nick_name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '昵称',
   `email` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '邮箱',
-  `qq_open_id` varchar(35) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'qqOpenID',
-  `qq_avatar` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'qq头像',
   `password` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT '密码',
   `join_time` datetime(0) NULL DEFAULT NULL COMMENT '加入时间',
   `last_login_time` datetime(0) NULL DEFAULT NULL COMMENT '最后登录时间',
@@ -96,8 +94,7 @@ CREATE TABLE `user_info`  (
   `total_space` bigint(0) NULL DEFAULT NULL COMMENT '总空间',
   PRIMARY KEY (`user_id`) USING BTREE,
   UNIQUE INDEX `key_email`(`email`) USING BTREE,
-  UNIQUE INDEX `key_nick_name`(`nick_name`) USING BTREE,
-  UNIQUE INDEX `key_qq_open_id`(`qq_open_id`) USING BTREE
+  UNIQUE INDEX `key_nick_name`(`nick_name`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '用户信息' ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;

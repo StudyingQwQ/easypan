@@ -115,6 +115,16 @@
             <version>${fastjson.version}</version>
         </dependency>
 
+        <!--服务监控-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+
         <!--apache common-->
         <dependency>
             <groupId>org.apache.commons</groupId>

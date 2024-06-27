@@ -1,0 +1,33 @@
+version: '3.5'
+# 网络配置
+networks:
+  backend:
+    driver: bridge
+
+services:
+  # prometheus监控
+  prometheus:
+    image: bitnami/prometheus:latest
+    container_name: prometheus
+    environment:
+        - TZ=Asia/Shanghai
+    privileged: true
+    volumes:
+      - ./deploy/prometheus/prometheus.yml:/opt/bitnami/prometheus/conf/prometheus.yml  # 将 prometheus 配置文件挂载到容器里
+    ports:
+      - "9090:9090"                                                              # 设置容器9090端口映射指定宿主机端口，用于宿主机访问可视化web
+    networks:
+      - backend
+    restart: always                                                              # 开机自启动
+  # 查看prometheus监控数据
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      - TZ=Asia/Shanghai
+    privileged: true
+    ports:
+      - "3000:3000"
+    networks:
+      - backend
+    restart: always

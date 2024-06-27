@@ -18,18 +18,6 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for email_code
--- ----------------------------
-DROP TABLE IF EXISTS `email_code`;
-CREATE TABLE `email_code`  (
-  `email` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '邮箱',
-  `code` varchar(5) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '编号',
-  `create_time` datetime(0) NULL DEFAULT NULL COMMENT '创建时间',
-  `status` tinyint(1) NULL DEFAULT NULL COMMENT '0:未使用  1:已使用',
-  PRIMARY KEY (`email`, `code`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci COMMENT = '邮箱验证码' ROW_FORMAT = Dynamic;
-
--- ----------------------------
 -- Table structure for file_info
 -- ----------------------------
 DROP TABLE IF EXISTS `file_info`;

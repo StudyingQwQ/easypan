@@ -252,9 +252,8 @@ public class AccountController extends BaseController {
             log.error("上传头像失败", e);
         }
 
-        // 同时将数据库中qq头像设为空
+        // 同时将数据库中头像设为空
         UserInfo userInfo = new UserInfo();
-        userInfo.setQqAvatar("");
         userInfoService.updateUserInfoByUserId(userInfo, webUserDto.getUserId());
         webUserDto.setAvatar(null);
         //更新session

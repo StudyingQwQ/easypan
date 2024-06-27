@@ -62,24 +62,6 @@ public interface UserInfoMapper<T, P> extends BaseMapper<T, P> {
     T selectByNickName(@Param("nickName") String nickName);
 
 
-    /**
-     * 根据QqOpenId更新
-     */
-    Integer updateByQqOpenId(@Param("bean") T t, @Param("qqOpenId") String qqOpenId);
-
-
-    /**
-     * 根据QqOpenId删除
-     */
-    Integer deleteByQqOpenId(@Param("qqOpenId") String qqOpenId);
-
-
-    /**
-     * 根据QqOpenId获取对象
-     */
-    T selectByQqOpenId(@Param("qqOpenId") String qqOpenId);
-
-
     Integer updateUserSpace(@Param("userId") String userId, @Param("useSpace") Long useSpace, @Param("totalSpace") Long totalSpace);
 
 }

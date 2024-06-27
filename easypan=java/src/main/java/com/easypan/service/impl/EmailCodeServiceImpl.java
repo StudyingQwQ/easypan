@@ -5,12 +5,9 @@ import com.easypan.utils.RedisComponent;
 import com.easypan.config.AppConfig;
 import com.easypan.entity.constants.Constants;
 import com.easypan.entity.dto.SysSettingsDto;
-import com.easypan.entity.po.EmailCode;
 import com.easypan.entity.po.UserInfo;
-import com.easypan.entity.query.EmailCodeQuery;
 import com.easypan.entity.query.UserInfoQuery;
 import com.easypan.exception.BusinessException;
-import com.easypan.mappers.EmailCodeMapper;
 import com.easypan.mappers.UserInfoMapper;
 import com.easypan.service.EmailCodeService;
 import com.easypan.utils.RedisUtils;
@@ -37,8 +34,6 @@ public class EmailCodeServiceImpl implements EmailCodeService {
 
     @Resource
     private JavaMailSender javaMailSender;
-    @Resource
-    private EmailCodeMapper<EmailCode, EmailCodeQuery> emailCodeMapper;
 
     @Resource
     private UserInfoMapper<UserInfo, UserInfoQuery> userInfoMapper;
@@ -100,30 +95,17 @@ public class EmailCodeServiceImpl implements EmailCodeService {
         String code = StringTools.getRandomNumber(Constants.LENGTH_5);
         sendEmailCode(toEmail, code);
 
-        // 数据库中的其他验证码置于不可用
-        //emailCodeMapper.disableEmailCode(toEmail);
         redisUtils.delete(toEmail);
         logger.info("删除");
 
-        // 封装EmailCode对象
-        /*
-        EmailCode emailCode = new EmailCode();
-        emailCode.setCode(code);
-        emailCode.setEmail(toEmail);
-        emailCode.setStatus(Constants.REGISTER_ZERO);
-        emailCode.setCreateTime(new Date());
-        */
-        // 插入数据库
-        //emailCodeMapper.insert(emailCode);
-        redisUtils.setex(toEmail,code,300);
+        redisUtils.setex(Constants.REDIS_KEY_EMAIL_CODE+toEmail,code,Constants.REDIS_KEY_EXPIRES_FIVE_MIN);
         logger.info((String) redisUtils.get(toEmail));
     }
 
     @Override
     public void checkCode(String email, String code) {
-        //EmailCode emailCode = emailCodeMapper.selectByEmailAndCode(email, code);
-        String emailCode = (String) redisUtils.get(email);
-        logger.info((String) redisUtils.get(email));
+        String emailCode = (String) redisUtils.get(Constants.REDIS_KEY_EMAIL_CODE+email);
+        logger.info((String) redisUtils.get(Constants.REDIS_KEY_EMAIL_CODE+email));
         // 如果没查到数据
         if(emailCode == null){
             throw new BusinessException("邮箱验证已失效");
@@ -131,14 +113,7 @@ public class EmailCodeServiceImpl implements EmailCodeService {
         if (!emailCode.equals(code)) {
             throw new BusinessException("邮箱验证码不正确");
         }
-        // 如果已经失效或超时
-        /*
-        if (emailCode.getStatus() == 1 || System.currentTimeMillis() - emailCode.getCreateTime()
-                .getTime() > Constants.LENGTH_15 * 1000 * 60) {
-            throw new BusinessException("邮箱验证已失效");
-        }*/
-
-        emailCodeMapper.disableEmailCode(email);
+        redisUtils.delete(Constants.REDIS_KEY_EMAIL_CODE+email);
     }
 
 }

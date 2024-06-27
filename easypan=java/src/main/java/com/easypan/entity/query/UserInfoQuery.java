@@ -31,20 +31,6 @@ public class UserInfoQuery extends BaseParam {
 	private String emailFuzzy;
 
 	/**
-	 * 
-	 */
-	private String qqAvatar;
-
-	private String qqAvatarFuzzy;
-
-	/**
-	 * 
-	 */
-	private String qqOpenId;
-
-	private String qqOpenIdFuzzy;
-
-	/**
 	 * 密码
 	 */
 	private String password;
@@ -131,38 +117,6 @@ public class UserInfoQuery extends BaseParam {
 
 	public String getEmailFuzzy(){
 		return this.emailFuzzy;
-	}
-
-	public void setQqAvatar(String qqAvatar){
-		this.qqAvatar = qqAvatar;
-	}
-
-	public String getQqAvatar(){
-		return this.qqAvatar;
-	}
-
-	public void setQqAvatarFuzzy(String qqAvatarFuzzy){
-		this.qqAvatarFuzzy = qqAvatarFuzzy;
-	}
-
-	public String getQqAvatarFuzzy(){
-		return this.qqAvatarFuzzy;
-	}
-
-	public void setQqOpenId(String qqOpenId){
-		this.qqOpenId = qqOpenId;
-	}
-
-	public String getQqOpenId(){
-		return this.qqOpenId;
-	}
-
-	public void setQqOpenIdFuzzy(String qqOpenIdFuzzy){
-		this.qqOpenIdFuzzy = qqOpenIdFuzzy;
-	}
-
-	public String getQqOpenIdFuzzy(){
-		return this.qqOpenIdFuzzy;
 	}
 
 	public void setPassword(String password){

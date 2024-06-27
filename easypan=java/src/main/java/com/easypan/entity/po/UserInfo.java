@@ -31,6 +31,11 @@ public class UserInfo implements Serializable {
     private String email;
 
     /**
+     * 头像
+     */
+    private String qqAvatar;
+
+    /**
      * 密码
      */
     private String password;

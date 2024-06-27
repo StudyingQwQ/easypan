@@ -98,7 +98,7 @@ public class EmailCodeServiceImpl implements EmailCodeService {
         redisUtils.delete(toEmail);
         logger.info("删除");
 
-        redisUtils.setex(Constants.REDIS_KEY_EMAIL_CODE+toEmail,code,Constants.REDIS_KEY_EXPIRES_FIVE_MIN);
+        redisUtils.setex(Constants.REDIS_KEY_EMAIL_CODE+toEmail,code,Constants.REDIS_KEY_EXPIRES_FIVE_MIN * 3);
         logger.info((String) redisUtils.get(toEmail));
     }
 

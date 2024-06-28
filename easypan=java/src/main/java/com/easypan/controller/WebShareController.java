@@ -86,6 +86,7 @@ public class WebShareController extends CommonFileController {
         shareInfoVO.setFileName(fileInfo.getFileName());
         UserInfo userInfo = userInfoService.getUserInfoByUserId(share.getUserId());
         shareInfoVO.setNickName(userInfo.getNickName());
+        shareInfoVO.setAvatar(userInfo.getQqAvatar());
         shareInfoVO.setUserId(userInfo.getUserId());
         return shareInfoVO;
     }

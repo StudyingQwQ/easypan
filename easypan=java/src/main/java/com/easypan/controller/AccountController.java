@@ -254,6 +254,7 @@ public class AccountController extends BaseController {
 
         // 同时将数据库中头像设为空
         UserInfo userInfo = new UserInfo();
+        userInfo.setQqAvatar("");
         userInfoService.updateUserInfoByUserId(userInfo, webUserDto.getUserId());
         webUserDto.setAvatar(null);
         //更新session

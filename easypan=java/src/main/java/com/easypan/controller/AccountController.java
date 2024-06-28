@@ -16,6 +16,7 @@ import com.easypan.exception.BusinessException;
 import com.easypan.service.EmailCodeService;
 import com.easypan.service.UserInfoService;
 import com.easypan.utils.StringTools;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -59,6 +60,7 @@ public class AccountController extends BaseController {
      * @param type 0:登录注册  1:邮箱验证码发送  默认0
      */
     @GetMapping("/checkCode")
+    @Operation(summary = "检验验证码")
     public void checkCode(HttpServletResponse response, HttpSession session
             , @RequestParam(value = "type", required = false) Integer type) throws IOException {
         CreateImageCode vCode = new CreateImageCode(130, 38, 5, 10);
@@ -84,6 +86,7 @@ public class AccountController extends BaseController {
      * @param type      0:注册  1:找回密码
      */
     @PostMapping("/sendEmailCode")
+    @Operation(summary = "发送邮箱验证码")
     @GlobalInterceptor(checkParams = true, checkLogin = false)
     public ResponseVO sendEmailCode(HttpSession session,
                                     @VerifyParam(required = true, regex = VerifyRegexEnum.EMAIL, max = 150) String email,
@@ -104,6 +107,7 @@ public class AccountController extends BaseController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "注册")
     @GlobalInterceptor(checkParams = true, checkLogin = false)
     public ResponseVO register(HttpSession session,
                                @VerifyParam(required = true, regex = VerifyRegexEnum.EMAIL, max = 150) String email,
@@ -124,6 +128,7 @@ public class AccountController extends BaseController {
 
 
     @PostMapping("/login")
+    @Operation(summary = "登录")
     @GlobalInterceptor(checkParams = true, checkLogin = false)
     public ResponseVO login(HttpSession session,
                             @VerifyParam(required = true) String email,
@@ -142,6 +147,7 @@ public class AccountController extends BaseController {
     }
 
     @RequestMapping("/resetPwd")
+    @Operation(summary = "重设密码")
     @GlobalInterceptor(checkParams = true, checkLogin = false)
     public ResponseVO resetPwd(HttpSession session,
                                @VerifyParam(required = true, regex = VerifyRegexEnum.EMAIL, max = 150) String email,
@@ -163,6 +169,7 @@ public class AccountController extends BaseController {
 
     // 获取用户头像
     @GetMapping("/getAvatar/{userId}")
+    @Operation(summary = "获取用户头像")
     @GlobalInterceptor(checkParams = true, checkLogin = false)
     public void getAvatar(HttpServletResponse response,
                           @VerifyParam(required = true) @PathVariable("userId") String userId) {
@@ -214,6 +221,7 @@ public class AccountController extends BaseController {
     }
 
     @GetMapping("/getUserInfo")
+    @Operation(summary = "获取用户信息")
     @GlobalInterceptor
     public ResponseVO getUserInfo(HttpSession session) {
         SessionWebUserDto sessionWebUserDto = getUserInfoFromSession(session);
@@ -221,6 +229,7 @@ public class AccountController extends BaseController {
     }
 
     @PostMapping("/getUseSpace")
+    @Operation(summary = "获取用户空间")
     @GlobalInterceptor
     public ResponseVO getUseSpace(HttpSession session) {
         SessionWebUserDto sessionWebUserDto = getUserInfoFromSession(session);
@@ -228,12 +237,14 @@ public class AccountController extends BaseController {
     }
 
     @PostMapping("/logout")
+    @Operation(summary = "退出登陆")
     public ResponseVO logout(HttpSession session) {
         session.invalidate();
         return getSuccessResponseVO(null);
     }
 
     @PostMapping("/updateUserAvatar")
+    @Operation(summary = "更新头像")
     @GlobalInterceptor
     public ResponseVO updateUserAvatar(HttpSession session, MultipartFile avatar) {
 
@@ -265,6 +276,7 @@ public class AccountController extends BaseController {
     }
 
     @PostMapping("/updatePassword")
+    @Operation(summary = "更新密码")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO updatePassword(HttpSession session,
                                      @VerifyParam(required = true, regex = VerifyRegexEnum.PASSWORD, min = 8, max = 18) String password) {

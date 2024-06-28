@@ -10,6 +10,7 @@ import com.easypan.entity.vo.FileInfoVO;
 import com.easypan.entity.vo.PaginationResultVO;
 import com.easypan.entity.vo.ResponseVO;
 import com.easypan.service.FileInfoService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +29,7 @@ public class RecycleController extends BaseController {
 
     // 加载回收站列表
     @PostMapping("/loadRecycleList")
+    @Operation(summary = "加载回收站文件")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO loadRecycleList(HttpSession session, Integer pageNo, Integer pageSize) {
         FileInfoQuery query = new FileInfoQuery();
@@ -42,6 +44,7 @@ public class RecycleController extends BaseController {
 
     // 回收站文件还原到根目录
     @RequestMapping("/recoverFile")
+    @Operation(summary = "恢复文件")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO recoverFile(HttpSession session,
                                   @VerifyParam(required = true) String fileIds) {
@@ -52,6 +55,7 @@ public class RecycleController extends BaseController {
 
 
     @PostMapping("/delFile")
+    @Operation(summary = "彻底删除文件")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO delFile(HttpSession session,
                               @VerifyParam(required = true) String fileIds) {

@@ -13,6 +13,7 @@ import com.easypan.entity.vo.ResponseVO;
 import com.easypan.entity.vo.UserInfoVO;
 import com.easypan.service.FileInfoService;
 import com.easypan.service.UserInfoService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,6 +40,7 @@ public class AdminController extends CommonFileController {
     private FileInfoService fileInfoService;
 
     @RequestMapping("/getSysSettings")
+    @Operation(summary = "获取系统设定")
     @GlobalInterceptor(checkParams = true, checkAdmin = true)
     public ResponseVO getSysSettings() {
         return getSuccessResponseVO(redisComponent.getSysSettingsDto());
@@ -46,6 +48,7 @@ public class AdminController extends CommonFileController {
 
 
     @RequestMapping("/saveSysSettings")
+    @Operation(summary = "保存系统设定")
     @GlobalInterceptor(checkParams = true, checkAdmin = true)
     public ResponseVO saveSysSettings(
             @VerifyParam(required = true) String registerEmailTitle,
@@ -60,6 +63,7 @@ public class AdminController extends CommonFileController {
     }
 
     @RequestMapping("/loadUserList")
+    @Operation(summary = "获取用户列表")
     @GlobalInterceptor(checkParams = true, checkAdmin = true)
     public ResponseVO loadUser(UserInfoQuery userInfoQuery) {
         userInfoQuery.setOrderBy("join_time desc");
@@ -69,6 +73,7 @@ public class AdminController extends CommonFileController {
 
 
     @RequestMapping("/updateUserStatus")
+    @Operation(summary = "更新用户状态")
     @GlobalInterceptor(checkParams = true, checkAdmin = true)
     public ResponseVO updateUserStatus(@VerifyParam(required = true) String userId,
                                        @VerifyParam(required = true) Integer status) {
@@ -77,6 +82,7 @@ public class AdminController extends CommonFileController {
     }
 
     @RequestMapping("/updateUserSpace")
+    @Operation(summary = "更新用户空间")
     @GlobalInterceptor(checkParams = true, checkAdmin = true)
     public ResponseVO updateUserSpace(@VerifyParam(required = true) String userId, @VerifyParam(required = true) Integer changeSpace) {
         userInfoService.changeUserSpace(userId, changeSpace);
@@ -90,6 +96,7 @@ public class AdminController extends CommonFileController {
      * @return
      */
     @RequestMapping("/loadFileList")
+    @Operation(summary = "查询所有文件")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO loadDataList(FileInfoQuery query) {
         query.setOrderBy("last_update_time desc");
@@ -99,6 +106,7 @@ public class AdminController extends CommonFileController {
     }
 
     @RequestMapping("/getFolderInfo")
+    @Operation(summary = "获取文件夹信息")
     @GlobalInterceptor(checkLogin = false, checkParams = true)
     public ResponseVO getFolderInfo(@VerifyParam(required = true) String path) {
         return super.getFolderInfo(path, null);
@@ -106,6 +114,7 @@ public class AdminController extends CommonFileController {
 
 
     @RequestMapping("/getFile/{userId}/{fileId}")
+    @Operation(summary = "获取特定用户的特定文件")
     @GlobalInterceptor(checkParams = true, checkAdmin = true)
     public void getFile(HttpServletResponse response,
                         @PathVariable("userId") @VerifyParam(required = true) String userId,
@@ -115,6 +124,7 @@ public class AdminController extends CommonFileController {
 
 
     @RequestMapping("/ts/getVideoInfo/{userId}/{fileId}")
+    @Operation(summary = "获取用户的视频文件")
     @GlobalInterceptor(checkParams = true, checkAdmin = true)
     public void getVideoInfo(HttpServletResponse response,
                              @PathVariable("userId") @VerifyParam(required = true) String userId,
@@ -123,6 +133,7 @@ public class AdminController extends CommonFileController {
     }
 
     @RequestMapping("/createDownloadUrl/{userId}/{fileId}")
+    @Operation(summary = "生成下载链接")
     @GlobalInterceptor(checkParams = true, checkAdmin = true)
     public ResponseVO createDownloadUrl(@PathVariable("userId") @VerifyParam(required = true) String userId,
                                         @PathVariable("fileId") @VerifyParam(required = true) String fileId) {
@@ -137,6 +148,7 @@ public class AdminController extends CommonFileController {
      * @throws Exception
      */
     @RequestMapping("/download/{code}")
+    @Operation(summary = "根据下载链接下载")
     @GlobalInterceptor(checkLogin = false, checkParams = true)
     public void download(HttpServletRequest request, HttpServletResponse response,
                          @PathVariable("code") @VerifyParam(required = true) String code) throws Exception {
@@ -145,6 +157,7 @@ public class AdminController extends CommonFileController {
 
 
     @RequestMapping("/delFile")
+    @Operation(summary = "删除文件")
     @GlobalInterceptor(checkParams = true, checkAdmin = true)
     public ResponseVO delFile(@VerifyParam(required = true) String fileIdAndUserIds) {
         String[] fileIdAndUserIdArray = fileIdAndUserIds.split(",");

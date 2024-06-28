@@ -9,6 +9,7 @@ import com.easypan.entity.query.FileShareQuery;
 import com.easypan.entity.vo.PaginationResultVO;
 import com.easypan.entity.vo.ResponseVO;
 import com.easypan.service.FileShareService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ public class ShareController extends BaseController {
 
 
     @PostMapping("/loadShareList")
+    @Operation(summary = "加载分享文件列表")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO loadShareList(HttpSession session, FileShareQuery query) {
         query.setOrderBy("share_time desc");
@@ -38,6 +40,7 @@ public class ShareController extends BaseController {
     }
 
     @PostMapping("/shareFile")
+    @Operation(summary = "分享文件")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO shareFile(HttpSession session,
                                 @VerifyParam(required = true) String fileId,
@@ -54,6 +57,7 @@ public class ShareController extends BaseController {
     }
 
     @PostMapping("/cancelShare")
+    @Operation(summary = "取消分享")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO cancelShare(HttpSession session,
                                   @VerifyParam(required = true) String shareIds) {

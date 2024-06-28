@@ -21,6 +21,7 @@ import com.easypan.service.FileShareService;
 import com.easypan.service.UserInfoService;
 import com.easypan.utils.CopyTools;
 import com.easypan.utils.StringTools;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -67,6 +68,7 @@ public class WebShareController extends CommonFileController {
      * 获取分享信息
      */
     @PostMapping("/getShareInfo")
+    @Operation(summary = "获取分享信息")
     @GlobalInterceptor(checkLogin = false, checkParams = true)
     public ResponseVO getShareInfo(@VerifyParam(required = true) String shareId) {
         return getSuccessResponseVO(getShareInfoCommon(shareId));
@@ -97,6 +99,7 @@ public class WebShareController extends CommonFileController {
      * 校验分享码
      */
     @RequestMapping("/checkShareCode")
+    @Operation(summary = "检查分享码")
     @GlobalInterceptor(checkLogin = false, checkParams = true)
     public ResponseVO checkShareCode(HttpSession session,
                                      @VerifyParam(required = true) String shareId,
@@ -108,6 +111,7 @@ public class WebShareController extends CommonFileController {
 
     // 只能分享一个文件或者文件夹(可包含多个子文件夹和子文件)
     @RequestMapping("/loadFileList")
+    @Operation(summary = "加载文件")
     @GlobalInterceptor(checkLogin = false, checkParams = true)
     public ResponseVO loadFileList(HttpSession session,
                                    @VerifyParam(required = true) String shareId, String filePid) {
@@ -144,6 +148,7 @@ public class WebShareController extends CommonFileController {
     }
 
     @PostMapping("/getFolderInfo")
+    @Operation(summary = "获取文件夹信息")
     @GlobalInterceptor(checkLogin = false, checkParams = true)
     public ResponseVO getFolderInfo(HttpSession session,
                                     @VerifyParam(required = true) String shareId,
@@ -153,6 +158,7 @@ public class WebShareController extends CommonFileController {
     }
 
     @RequestMapping("/getFile/{shareId}/{fileId}")
+    @Operation(summary = "根据分享码获取文件")
     public void getFile(HttpServletResponse response, HttpSession session,
                         @PathVariable("shareId") @VerifyParam(required = true) String shareId,
                         @PathVariable("fileId") @VerifyParam(required = true) String fileId) {
@@ -161,6 +167,7 @@ public class WebShareController extends CommonFileController {
     }
 
     @RequestMapping("/ts/getVideoInfo/{shareId}/{fileId}")
+    @Operation(summary = "根据分享码获取视频")
     public void getVideoInfo(HttpServletResponse response,
                              HttpSession session,
                              @PathVariable("shareId") @VerifyParam(required = true) String shareId,
@@ -170,6 +177,7 @@ public class WebShareController extends CommonFileController {
     }
 
     @RequestMapping("/createDownloadUrl/{shareId}/{fileId}")
+    @Operation(summary = "创建下载链接")
     @GlobalInterceptor(checkLogin = false, checkParams = true)
     public ResponseVO createDownloadUrl(HttpSession session,
                                         @PathVariable("shareId") @VerifyParam(required = true) String shareId,
@@ -179,6 +187,7 @@ public class WebShareController extends CommonFileController {
     }
 
     @RequestMapping("/download/{code}")
+    @Operation(summary = "下载")
     @GlobalInterceptor(checkLogin = false, checkParams = true)
     public void download(HttpServletRequest request, HttpServletResponse response,
                          @PathVariable("code") @VerifyParam(required = true) String code) throws Exception {
@@ -186,6 +195,7 @@ public class WebShareController extends CommonFileController {
     }
 
     @RequestMapping("/saveShare")
+    @Operation(summary = "保存分享的文件")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO saveShare(HttpSession session,
                                 @VerifyParam(required = true) String shareId,

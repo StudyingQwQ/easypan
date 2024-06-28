@@ -19,6 +19,7 @@ import com.easypan.entity.vo.ResponseVO;
 import com.easypan.service.FileInfoService;
 import com.easypan.utils.CopyTools;
 import com.easypan.utils.StringTools;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,7 +35,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/file")
-@Tag(name = "FileControllerAPI")
+@Tag(name = "FileControllerAPI",description = "网盘文件管理相关")
 public class FileInfoController extends CommonFileController {
 
     @Resource
@@ -42,6 +43,7 @@ public class FileInfoController extends CommonFileController {
 
 
     @PostMapping("/loadDataList")
+    @Operation(summary = "加载数据列表")
     @GlobalInterceptor
     public ResponseVO loadDataList(HttpSession session, FileInfoQuery query, String category) {
         FileCategoryEnums categoryEnum = FileCategoryEnums.getByCode(category);
@@ -69,6 +71,7 @@ public class FileInfoController extends CommonFileController {
      * @return
      */
     @PostMapping("/uploadFile")
+    @Operation(summary = "上传文件")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO uploadFile(HttpSession session,
                                  String fileId,
@@ -90,6 +93,7 @@ public class FileInfoController extends CommonFileController {
 
     // 得到缩略图
     @GetMapping("/getImage/{imageFolder}/{imageName}")
+    @Operation(summary = "获取缩略图")
     public void getImage(HttpServletResponse response,
                          @PathVariable("imageFolder") String imageFolder,
                          @PathVariable("imageName") String imageName) {
@@ -97,6 +101,7 @@ public class FileInfoController extends CommonFileController {
     }
 
     @GetMapping("/ts/getVideoInfo/{fileId}")
+    @Operation(summary = "获取视频信息")
     public void getVideoInfo(HttpServletResponse response,
                              HttpSession session,
                              @PathVariable("fileId") @VerifyParam(required = true) String fileId) {
@@ -105,6 +110,7 @@ public class FileInfoController extends CommonFileController {
     }
 
     @RequestMapping("/getFile/{fileId}")
+    @Operation(summary = "获取文件")
     public void getFile(HttpServletResponse response,
                         HttpSession session,
                         @PathVariable("fileId") @VerifyParam(required = true) String fileId) {
@@ -114,6 +120,7 @@ public class FileInfoController extends CommonFileController {
 
 
     @PostMapping("/newFoloder")
+    @Operation(summary = "新建文件夹")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO newFolder(HttpSession session,
                                 @VerifyParam(required = true) String filePid,
@@ -127,6 +134,7 @@ public class FileInfoController extends CommonFileController {
      * @param path 目录1/目录2/目录3...
      */
     @PostMapping("/getFolderInfo")
+    @Operation(summary = "获取文件夹信息")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO getFolderInfo(HttpSession session,
                                     @VerifyParam(required = true) String path) {
@@ -134,6 +142,7 @@ public class FileInfoController extends CommonFileController {
     }
 
     @PostMapping("/rename")
+    @Operation(summary = "重命名")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO rename(HttpSession session,
                              @VerifyParam(required = true) String fileId,
@@ -145,6 +154,7 @@ public class FileInfoController extends CommonFileController {
 
     // 加载除自己外的文件夹
     @PostMapping("/loadAllFolder")
+    @Operation(summary = "加载所有文件夹")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO loadAllFolder(HttpSession session,
                                     @VerifyParam(required = true) String filePid,
@@ -157,6 +167,7 @@ public class FileInfoController extends CommonFileController {
     }
 
     @PostMapping("/changeFileFolder")
+    @Operation(summary = "更改文件夹")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO changeFileFolder(HttpSession session,
                                        @VerifyParam(required = true) String fileIds,
@@ -168,6 +179,7 @@ public class FileInfoController extends CommonFileController {
 
 
     @PostMapping("/createDownloadUrl/{fileId}")
+    @Operation(summary = "创建下载链接")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO createDownloadUrl(HttpSession session,
                                         @PathVariable("fileId") @VerifyParam(required = true) String fileId) {
@@ -176,6 +188,7 @@ public class FileInfoController extends CommonFileController {
 
     // 无需登陆校验
     @GetMapping("/download/{code}")
+    @Operation(summary = "下载")
     @GlobalInterceptor(checkLogin = false, checkParams = true)
     public void download(HttpServletRequest request,
                          HttpServletResponse response,
@@ -184,6 +197,7 @@ public class FileInfoController extends CommonFileController {
     }
 
     @PostMapping("/delFile")
+    @Operation(summary = "删除文件")
     @GlobalInterceptor(checkParams = true)
     public ResponseVO delFile(HttpSession session,
                               @VerifyParam(required = true) String fileIds) {

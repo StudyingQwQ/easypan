@@ -16,6 +16,7 @@ import com.easypan.exception.BusinessException;
 import com.easypan.service.EmailCodeService;
 import com.easypan.service.UserInfoService;
 import com.easypan.utils.StringTools;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +32,7 @@ import java.io.PrintWriter;
 
 @Slf4j
 @RestController
+@Tag(name = "AccountControllerAPI",description = "账号管理相关接口，包括注册，登录，发送邮箱验证码")
 public class AccountController extends BaseController {
 
     @Resource

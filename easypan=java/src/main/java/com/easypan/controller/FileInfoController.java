@@ -19,6 +19,7 @@ import com.easypan.entity.vo.ResponseVO;
 import com.easypan.service.FileInfoService;
 import com.easypan.utils.CopyTools;
 import com.easypan.utils.StringTools;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +34,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/file")
+@Tag(name = "FileControllerAPI")
 public class FileInfoController extends CommonFileController {
 
     @Resource

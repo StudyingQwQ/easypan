@@ -10,6 +10,7 @@ import com.easypan.entity.vo.FileInfoVO;
 import com.easypan.entity.vo.PaginationResultVO;
 import com.easypan.entity.vo.ResponseVO;
 import com.easypan.service.FileInfoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,6 +20,7 @@ import javax.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/recycle")
+@Tag(name = "RecycleControllerAPI",description = "回收管理相关接口，包括加载删除列表，找回，删除")
 public class RecycleController extends BaseController {
 
     @Resource

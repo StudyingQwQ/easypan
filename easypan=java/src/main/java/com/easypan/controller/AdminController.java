@@ -13,6 +13,7 @@ import com.easypan.entity.vo.ResponseVO;
 import com.easypan.entity.vo.UserInfoVO;
 import com.easypan.service.FileInfoService;
 import com.easypan.service.UserInfoService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +24,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 @RestController
+@Tag(name = "AdminControllerAPI",description = "管理员功能，包括查看用户信息，查看文件列表，上传下载")
 @RequestMapping("/admin")
+
 public class AdminController extends CommonFileController {
 
     @Resource

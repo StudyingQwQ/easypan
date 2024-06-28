@@ -9,6 +9,7 @@ import com.easypan.entity.query.FileShareQuery;
 import com.easypan.entity.vo.PaginationResultVO;
 import com.easypan.entity.vo.ResponseVO;
 import com.easypan.service.FileShareService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpSession;
 
 @RestController("shareController")
 @RequestMapping("/share")
+@Tag(name = "ShareControllerAPI",description = "分享文件相关接口，包括加载列表，分享，取消分享")
 public class ShareController extends BaseController {
 
     @Resource

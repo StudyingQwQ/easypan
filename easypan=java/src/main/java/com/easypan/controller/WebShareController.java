@@ -21,6 +21,7 @@ import com.easypan.service.FileShareService;
 import com.easypan.service.UserInfoService;
 import com.easypan.utils.CopyTools;
 import com.easypan.utils.StringTools;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,6 +35,7 @@ import java.util.Date;
 
 @RestController
 @RequestMapping("/showShare")
+@Tag(name = "WebShareControllerAPI",description = "获取分享文件接口")
 public class WebShareController extends CommonFileController {
 
     @Resource

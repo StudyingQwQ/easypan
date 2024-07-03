@@ -1,7 +1,7 @@
 package com.easypan.service.impl;
 
 
-import com.easypan.utils.RedisComponent;
+import com.easypan.utils.*;
 import com.easypan.config.AppConfig;
 import com.easypan.entity.constants.Constants;
 import com.easypan.entity.dto.SessionWebUserDto;
@@ -18,10 +18,6 @@ import com.easypan.exception.BusinessException;
 import com.easypan.mappers.FileInfoMapper;
 import com.easypan.mappers.UserInfoMapper;
 import com.easypan.service.FileInfoService;
-import com.easypan.utils.DateUtil;
-import com.easypan.utils.ProcessUtils;
-import com.easypan.utils.ScaleFilter;
-import com.easypan.utils.StringTools;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.context.annotation.Lazy;
@@ -63,6 +59,9 @@ public class FileInfoServiceImpl implements FileInfoService {
     @Resource
     @Lazy
     private FileInfoServiceImpl fileInfoService;
+
+    @Resource
+    private RedisUtils redisUtils;
 
 
     @Override
@@ -191,10 +190,10 @@ public class FileInfoServiceImpl implements FileInfoService {
                 .forEach(fileInfo ->
                         findAllSubFolderFileIdList(delFilePidList, userId, fileInfo.getFileId(), FileDelFlagEnums.USING.getFlag()));
 
-        //将目录下的所有文件更新为已删除
+        //将目录下的所有文件更新为回收站
         if (!delFilePidList.isEmpty()) {
             FileInfo updateInfo = new FileInfo();
-            updateInfo.setDelFlag(FileDelFlagEnums.DEL.getFlag());
+            updateInfo.setDelFlag(FileDelFlagEnums.RECYCLE.getFlag());
             this.fileInfoMapper.updateFileDelFlagBatch(updateInfo, userId, delFilePidList,
                     null, FileDelFlagEnums.USING.getFlag());
         }
@@ -206,6 +205,50 @@ public class FileInfoServiceImpl implements FileInfoService {
         fileInfo.setDelFlag(FileDelFlagEnums.RECYCLE.getFlag());
         this.fileInfoMapper.updateFileDelFlagBatch(fileInfo, userId, null,
                 delFileIdList, FileDelFlagEnums.USING.getFlag());
+    }
+
+    @Override
+    public void removeFilefRecycleBatch(String userId, String fileIds) {
+        // 查询该用户需删除的fileIds并且状态为使用中的文件
+        List<FileInfo> fileInfoList = selectListByIdsAndDelFlag(userId, fileIds, FileDelFlagEnums.RECYCLE.getFlag());
+        if (fileInfoList.isEmpty()) {
+            return;
+        }
+        // 如果不为空
+        List<String> delFilePidList = new ArrayList<>();
+        fileInfoList.stream()
+                .filter(fileInfo ->
+                        fileInfo.getFolderType().equals(FileFolderTypeEnums.FOLDER.getType()))
+                .forEach(fileInfo ->
+                        findAllSubFolderFileIdList(delFilePidList, userId, fileInfo.getFileId(), FileDelFlagEnums.RECYCLE.getFlag()));
+
+        //将目录下的所有文件更新为已删除
+        if (!delFilePidList.isEmpty()) {
+            FileInfo updateInfo = new FileInfo();
+            updateInfo.setDelFlag(FileDelFlagEnums.DEL.getFlag());
+            this.fileInfoMapper.updateFileDelFlagBatch(updateInfo, userId, delFilePidList,
+                    null, FileDelFlagEnums.RECYCLE.getFlag());
+        }
+
+        //将选中的文件更新为已删除
+        List<String> delFileIdList = Arrays.asList(fileIds.split(","));
+        FileInfo fileInfo = new FileInfo();
+        fileInfo.setRecoveryTime(new Date());
+        fileInfo.setDelFlag(FileDelFlagEnums.DEL.getFlag());
+        fileInfo.setFileSize(0L);
+        this.fileInfoMapper.updateFileDelFlagBatch(fileInfo, userId, null,
+                delFileIdList, FileDelFlagEnums.RECYCLE.getFlag());
+
+        //更新用户剩余存储空间设置缓存
+        Long useSpace = this.fileInfoMapper.selectUseSpace(userId);
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUseSpace(useSpace);
+        userInfoMapper.updateByUserId(userInfo, userId);
+
+        //设置缓存
+        UserSpaceDto userSpaceDto = redisComponent.getUserSpaceUse(userId);
+        userSpaceDto.setUseSpace(useSpace);
+        redisComponent.saveUserSpaceUse(userId, userSpaceDto);
     }
 
     // 回收站还原
@@ -275,7 +318,10 @@ public class FileInfoServiceImpl implements FileInfoService {
     @Transactional(rollbackFor = Exception.class)
     public void delFileBatch(String userId, String fileIds, boolean adminOp) {
 
-        List<FileInfo> fileInfoList = selectListByIdsAndDelFlag(userId, fileIds, FileDelFlagEnums.RECYCLE.getFlag());
+        List<FileInfo> fileInfoList = selectListByIdsAndDelFlag(userId, fileIds, FileDelFlagEnums.DEL.getFlag());
+        if (fileInfoList.isEmpty()) {
+            return;
+        }
 
         List<String> delFileSubFolderFileIdList = new ArrayList<>();
         //找到所选文件子目录文件ID
@@ -285,7 +331,6 @@ public class FileInfoServiceImpl implements FileInfoService {
                 .forEach(fileInfo ->
                         findAllSubFolderFileIdList(delFileSubFolderFileIdList, userId,
                                 fileInfo.getFileId(), FileDelFlagEnums.DEL.getFlag()));
-
 
         //删除所选文件，子目录中的文件
         if (!delFileSubFolderFileIdList.isEmpty()) {

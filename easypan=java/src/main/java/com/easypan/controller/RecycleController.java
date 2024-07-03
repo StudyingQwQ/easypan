@@ -60,7 +60,8 @@ public class RecycleController extends BaseController {
     public ResponseVO delFile(HttpSession session,
                               @VerifyParam(required = true) String fileIds) {
         SessionWebUserDto webUserDto = getUserInfoFromSession(session);
-        fileInfoService.delFileBatch(webUserDto.getUserId(), fileIds, false);
+        fileInfoService.removeFilefRecycleBatch(webUserDto.getUserId(), fileIds);
+//        fileInfoService.delFileBatch(webUserDto.getUserId(), fileIds, false);
         return getSuccessResponseVO(null);
     }
 

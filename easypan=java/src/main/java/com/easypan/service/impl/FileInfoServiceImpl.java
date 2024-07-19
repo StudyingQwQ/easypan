@@ -60,9 +60,6 @@ public class FileInfoServiceImpl implements FileInfoService {
     @Lazy
     private FileInfoServiceImpl fileInfoService;
 
-    @Resource
-    private RedisUtils redisUtils;
-
 
     @Override
     public FileInfo getFileInfoByFileIdAndUserId(String fileId, String userId) {
@@ -198,6 +195,9 @@ public class FileInfoServiceImpl implements FileInfoService {
                     null, FileDelFlagEnums.USING.getFlag());
         }
 
+        // 获取被修改的文件的存储空间总和
+        Long fileSize = fileInfoList.stream().mapToLong(FileInfo::getFileSize).sum();
+
         //将选中的文件更新为回收站
         List<String> delFileIdList = Arrays.asList(fileIds.split(","));
         FileInfo fileInfo = new FileInfo();
@@ -205,6 +205,17 @@ public class FileInfoServiceImpl implements FileInfoService {
         fileInfo.setDelFlag(FileDelFlagEnums.RECYCLE.getFlag());
         this.fileInfoMapper.updateFileDelFlagBatch(fileInfo, userId, null,
                 delFileIdList, FileDelFlagEnums.USING.getFlag());
+
+        //更新用户剩余存储空间设置缓存
+        Long useSpace = this.fileInfoMapper.selectUseSpace(userId) - fileSize;
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUseSpace(useSpace);
+        userInfoMapper.updateByUserId(userInfo, userId);
+
+        //设置缓存
+        UserSpaceDto userSpaceDto = redisComponent.getUserSpaceUse(userId);
+        userSpaceDto.setUseSpace(useSpace);
+        redisComponent.saveUserSpaceUse(userId, userSpaceDto);
     }
 
     @Override
@@ -235,20 +246,8 @@ public class FileInfoServiceImpl implements FileInfoService {
         FileInfo fileInfo = new FileInfo();
         fileInfo.setRecoveryTime(new Date());
         fileInfo.setDelFlag(FileDelFlagEnums.DEL.getFlag());
-        fileInfo.setFileSize(0L);
         this.fileInfoMapper.updateFileDelFlagBatch(fileInfo, userId, null,
                 delFileIdList, FileDelFlagEnums.RECYCLE.getFlag());
-
-        //更新用户剩余存储空间设置缓存
-        Long useSpace = this.fileInfoMapper.selectUseSpace(userId);
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUseSpace(useSpace);
-        userInfoMapper.updateByUserId(userInfo, userId);
-
-        //设置缓存
-        UserSpaceDto userSpaceDto = redisComponent.getUserSpaceUse(userId);
-        userSpaceDto.setUseSpace(useSpace);
-        redisComponent.saveUserSpaceUse(userId, userSpaceDto);
     }
 
     // 回收站还原
@@ -299,6 +298,13 @@ public class FileInfoServiceImpl implements FileInfoService {
         fileInfo.setLastUpdateTime(new Date());
         this.fileInfoMapper.updateFileDelFlagBatch(fileInfo, userId, null, delFileIdList,
                 FileDelFlagEnums.RECYCLE.getFlag());
+
+        // 恢复使用空间
+        Long fileSize = fileInfoList.stream().mapToLong(FileInfo::getFileSize).sum();
+        Long useSpace = this.fileInfoMapper.selectUseSpace(userId) + fileSize;
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUseSpace(useSpace);
+        userInfoMapper.updateByUserId(userInfo, userId);
 
         //将所选文件重命名
         for (FileInfo item : fileInfoList) {
@@ -415,38 +421,6 @@ public class FileInfoServiceImpl implements FileInfoService {
             sourceFileList.forEach(item -> findAllSubFile(copyFileList, item, sourceUserId, currentUserId, curDate, newFileId));
         }
     }
-//
-//    /**
-//     * 前端传参： String shareId, String filePid
-//     * shareId -> shareSessionDto
-//     * @param rootFilePid shareSessionDto.getFileId()
-//     * @param userId shareSessionDto.getShareUserId()
-//     * @param fileId filePid
-//     */
-//    @Override
-//    public void checkRootFilePid(String rootFilePid, String userId, String fileId) {
-//        if (StringTools.isEmpty(fileId)) {
-//            throw new BusinessException(ResponseCodeEnum.CODE_600);
-//        }
-//        if (rootFilePid.equals(fileId)) {
-//            return;
-//        }
-//        checkFilePid(rootFilePid, fileId, userId);
-//    }
-
-//    private void checkFilePid(String rootFilePid, String fileId, String userId) {
-//        FileInfo fileInfo = this.fileInfoMapper.selectByFileIdAndUserId(fileId, userId);
-//        if (fileInfo == null) {
-//            throw new BusinessException(ResponseCodeEnum.CODE_600);
-//        }
-//        if (Constants.ZERO_STR.equals(fileInfo.getFilePid())) {
-//            throw new BusinessException(ResponseCodeEnum.CODE_600);
-//        }
-//        if (fileInfo.getFilePid().equals(rootFilePid)) {
-//            return;
-//        }
-//        checkFilePid(rootFilePid, fileInfo.getFilePid(), userId);
-//    }
 
     // 递归查找文件夹下的所有文件
     private void findAllSubFolderFileIdList(List<String> fileIdList, String userId, String fileId, Integer delFlag) {
